@@ -86,7 +86,7 @@ function executeCommand(command) {
             break;
         case 'uname':
             if (args[1] === '-a') {
-                output = 'Fake Linux by Hrishav';
+                output = 'Electron v1.1.2 by Hrishav';
             } else {
                 output = 'Usage: uname -a';
             }
