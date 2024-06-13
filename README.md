@@ -6,8 +6,11 @@ Electron is a toy terminal emulator designed to simulate a Debian-based Linux en
 
 # Features
 **User Management:** Add and switch between multiple local users.
+
 **System Update and Upgrade:** Simulate the update and upgrade of repositories and packages.
+
 **File System Navigation:** Navigate through directories, list storage contents, and print the working directory.
+
 **System Information:** Display basic system information like the distro version.
 
 # Supported Commands
