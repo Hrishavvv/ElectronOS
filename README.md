@@ -36,4 +36,10 @@ Electron is a toy terminal emulator designed to simulate a Debian-based Linux en
 
 `uname -a`: Display the current version of the distribution.
 
+`ifconfig`: Display the infromation about your network.
+
+`trace -m`: Get infromation about your own IP Address.
+
+`trace -t <ip addr>`: Get infromation about the enetred IP Address.
+
 _More commands will be added soon..._

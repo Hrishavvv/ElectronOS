@@ -11,9 +11,6 @@ const directories = {
     '~': ['bin', 'boot', 'dev', 'etc', 'home', 'lib', 'lib64', 'media', 'mnt', 'opt', 'proc', 'root', 'run', 'sbin', 'srv', 'sys', 'tmp', 'usr', 'var'],
 };
 
-let pingInterval;
-let isPinging = false;
-
 function updatePrompt() {
     if (isRoot) {
         promptElement.textContent = `root@electron:${currentDir}# `;
@@ -143,52 +140,23 @@ async function executeCommand(command) {
             outputElement.innerHTML = '';
             return '';
         case 'ifconfig':
-            output = `
-eth0      Link encap:Ethernet  HWaddr 00:0a:95:9d:68:16  
-          inet addr:192.168.1.2  Bcast:192.168.1.255  Mask:255.255.255.0
-          inet6 addr: fe80::20a:95ff:fe9d:6816/64 Scope:Link
-          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
-          RX packets:123456 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:123456 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
-          RX bytes:1048576 (1.0 MB)  TX bytes:1048576 (1.0 MB)
+            output = `eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+    inet 192.168.1.100  netmask 255.255.255.0  broadcast 192.168.1.255
+    inet6 fe80::a00:27ff:fe4e:66a1  prefixlen 64  scopeid 0x20<link>
+    ether 08:00:27:4e:66:a1  txqueuelen 1000  (Ethernet)
+    RX packets 215265  bytes 327264500 (312.1 MiB)
+    RX errors 0  dropped 0  overruns 0  frame 0
+    TX packets 155209  bytes 14030524 (13.3 MiB)
+    TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
-lo        Link encap:Local Loopback  
-          inet addr:127.0.0.1  Mask:255.0.0.0
-          inet6 addr: ::1/128 Scope:Host
-          UP LOOPBACK RUNNING  MTU:65536  Metric:1
-          RX packets:1234 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:1234 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
-          RX bytes:98765 (98.7 KB)  TX bytes:98765 (98.7 KB)
-            `;
-            break;
-         case 'ping':
-            if (args[1]) {
-                const target = args[1];
-                let count = 0;
-                outputElement.innerHTML += `<div><span style="color:${promptElement.style.color};">${promptElement.textContent}</span> ${command}</div>`;
-                isPinging = true;
-                pingInterval = setInterval(async () => {
-                    if (!isPinging) {
-                        clearInterval(pingInterval);
-                        return;
-                    }
-                    count++;
-                    try {
-                        const response = await fetch(`https://api.ping.pe/?host=${target}`);
-                        const data = await response.json();
-                        const time = data.rtt.toFixed(2);
-                        outputElement.innerHTML += `<div style="color:lime;">64 bytes from ${target}: icmp_seq=${count} ttl=64 time=${time} ms</div>`;
-                    } catch (error) {
-                        outputElement.innerHTML += `<div style="color:lime;">PING ${target} (${target}): Network is unreachable</div>`;
-                    }
-                    outputElement.scrollTop = outputElement.scrollHeight;
-                }, 1000);
-                return '';
-            } else {
-                output = 'Usage: ping <hostname or IP address>';
-            }
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+    inet 127.0.0.1  netmask 255.0.0.0
+    inet6 ::1  prefixlen 128  scopeid 0x10<host>
+    loop  txqueuelen 1000  (Local Loopback)
+    RX packets 0  bytes 0 (0.0 B)
+    RX errors 0  dropped 0  overruns 0  frame 0
+    TX packets 0  bytes 0 (0.0 B)
+    TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0`;
             break;
         case 'trace':
             if (args[1] === '-m') {
@@ -212,35 +180,30 @@ async function fetchIpInfo(ip = '') {
     const { ip: ipAddress, city, region, country_name, timezone, org, asn, latitude, longitude, utc_offset } = data;
     const localTime = new Date().toLocaleString('en-US', { timeZone: timezone });
 
-    return `
-<div style="color:lime;">
-    IP Address: ${ipAddress}
-    Location: ${city}, ${region}, ${country_name}
-    Timezone: ${timezone} (UTC${utc_offset})
-    Local Time: ${localTime}
-    ISP: ${org}
-    ASN: ${asn}
-    Lat/Long: ${latitude}, ${longitude}
-</div>
-    `;
+    return `IP: ${ipAddress}
+City: ${city}
+Region: ${region}
+Country: ${country_name}
+Timezone: ${timezone}
+Local Time: ${localTime}
+ISP: ${org}
+ASN: ${asn}
+Latitude: ${latitude}
+Longitude: ${longitude}`;
 }
 
-inputElement.addEventListener('keydown', function (event) {
+inputElement.addEventListener('keydown', async function (event) {
     if (event.key === 'Enter') {
         let command = inputElement.value;
-        outputElement.innerHTML += `<div><span style="color:${promptElement.style.color};">${promptElement.textContent}</span> ${command}</div>`;
-        executeCommand(command).then(output => {
-            if (output) {
-                outputElement.innerHTML += `<div style="color:lime;">${output}</div>`;
-                outputElement.scrollTop = outputElement.scrollHeight;
-            }
-            inputElement.value = '';
-        });
-    } else if (event.key === 'c' && event.ctrlKey && isPinging) {
-        isPinging = false;
-        clearInterval(pingInterval);
-        outputElement.innerHTML += `<div style="color:lime;">--- ping statistics ---</div>`;
+        let output = await executeCommand(command);
+        if (output) {
+            outputElement.innerHTML += `<div><span style="color:${promptElement.style.color};">${promptElement.textContent}</span> ${command}</div><div style="color:lime; text-align:left;">${output}</div>`;
+        } else {
+            outputElement.innerHTML += `<div><span style="color:${promptElement.style.color};">${promptElement.textContent}</span> ${command}</div>`;
+        }
         inputElement.value = '';
+        updatePrompt();
+        outputElement.scrollTop = outputElement.scrollHeight;
     }
 });
 
