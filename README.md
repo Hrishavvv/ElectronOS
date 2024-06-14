@@ -40,6 +40,6 @@ Electron is a toy terminal emulator designed to simulate a Debian-based Linux en
 
 `trace -m`: Get infromation about your own IP Address.
 
-`trace -t <ip addr>`: Get infromation about the enetred IP Address.
+`trace -t <ip addr>`: Get infromation about the entered IP Address.
 
 _More commands will be added soon..._
