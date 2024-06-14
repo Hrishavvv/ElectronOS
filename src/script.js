@@ -11,6 +11,9 @@ const directories = {
     '~': ['bin', 'boot', 'dev', 'etc', 'home', 'lib', 'lib64', 'media', 'mnt', 'opt', 'proc', 'root', 'run', 'sbin', 'srv', 'sys', 'tmp', 'usr', 'var'],
 };
 
+let pingInterval;
+let isPinging = false;
+
 function updatePrompt() {
     if (isRoot) {
         promptElement.textContent = `root@electron:${currentDir}# `;
@@ -21,7 +24,7 @@ function updatePrompt() {
     }
 }
 
-function executeCommand(command) {
+async function executeCommand(command) {
     let output = '';
     let args = command.split(' ');
     let cmd = args[0];
@@ -139,24 +142,105 @@ function executeCommand(command) {
         case 'clear':
             outputElement.innerHTML = '';
             return '';
+        case 'ifconfig':
+            output = `
+eth0      Link encap:Ethernet  HWaddr 00:0a:95:9d:68:16  
+          inet addr:192.168.1.2  Bcast:192.168.1.255  Mask:255.255.255.0
+          inet6 addr: fe80::20a:95ff:fe9d:6816/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:123456 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:123456 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:1048576 (1.0 MB)  TX bytes:1048576 (1.0 MB)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:1234 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:1234 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:98765 (98.7 KB)  TX bytes:98765 (98.7 KB)
+            `;
+            break;
+         case 'ping':
+            if (args[1]) {
+                const target = args[1];
+                let count = 0;
+                outputElement.innerHTML += `<div><span style="color:${promptElement.style.color};">${promptElement.textContent}</span> ${command}</div>`;
+                isPinging = true;
+                pingInterval = setInterval(async () => {
+                    if (!isPinging) {
+                        clearInterval(pingInterval);
+                        return;
+                    }
+                    count++;
+                    try {
+                        const response = await fetch(`https://api.ping.pe/?host=${target}`);
+                        const data = await response.json();
+                        const time = data.rtt.toFixed(2);
+                        outputElement.innerHTML += `<div style="color:lime;">64 bytes from ${target}: icmp_seq=${count} ttl=64 time=${time} ms</div>`;
+                    } catch (error) {
+                        outputElement.innerHTML += `<div style="color:lime;">PING ${target} (${target}): Network is unreachable</div>`;
+                    }
+                    outputElement.scrollTop = outputElement.scrollHeight;
+                }, 1000);
+                return '';
+            } else {
+                output = 'Usage: ping <hostname or IP address>';
+            }
+            break;
+        case 'trace':
+            if (args[1] === '-m') {
+                output = await fetchIpInfo();
+            } else if (args[1] === '-t' && args[2]) {
+                const targetIp = args[2];
+                output = await fetchIpInfo(targetIp);
+            } else {
+                output = 'Usage: trace -m | trace -t <IP address>';
+            }
+            break;
         default:
             output = `Command not found: ${command}`;
     }
     return output;
 }
 
+async function fetchIpInfo(ip = '') {
+    const response = await fetch(`https://ipapi.co/${ip}/json/`);
+    const data = await response.json();
+    const { ip: ipAddress, city, region, country_name, timezone, org, asn, latitude, longitude, utc_offset } = data;
+    const localTime = new Date().toLocaleString('en-US', { timeZone: timezone });
+
+    return `
+<div style="color:lime;">
+    IP Address: ${ipAddress}
+    Location: ${city}, ${region}, ${country_name}
+    Timezone: ${timezone} (UTC${utc_offset})
+    Local Time: ${localTime}
+    ISP: ${org}
+    ASN: ${asn}
+    Lat/Long: ${latitude}, ${longitude}
+</div>
+    `;
+}
+
 inputElement.addEventListener('keydown', function (event) {
     if (event.key === 'Enter') {
         let command = inputElement.value;
-        let output = executeCommand(command);
-        if (output) {
-            outputElement.innerHTML += `<div><span style="color:${promptElement.style.color};">${promptElement.textContent}</span> ${command}</div><div style="color:lime;">${output}</div>`;
-        } else {
-            outputElement.innerHTML += `<div><span style="color:${promptElement.style.color};">${promptElement.textContent}</span> ${command}</div>`;
-        }
+        outputElement.innerHTML += `<div><span style="color:${promptElement.style.color};">${promptElement.textContent}</span> ${command}</div>`;
+        executeCommand(command).then(output => {
+            if (output) {
+                outputElement.innerHTML += `<div style="color:lime;">${output}</div>`;
+                outputElement.scrollTop = outputElement.scrollHeight;
+            }
+            inputElement.value = '';
+        });
+    } else if (event.key === 'c' && event.ctrlKey && isPinging) {
+        isPinging = false;
+        clearInterval(pingInterval);
+        outputElement.innerHTML += `<div style="color:lime;">--- ping statistics ---</div>`;
         inputElement.value = '';
-        updatePrompt();
-        outputElement.scrollTop = outputElement.scrollHeight;
     }
 });
 
