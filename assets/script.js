@@ -1,5 +1,5 @@
 let isRoot = false;
-let users = { 'user': '12345' };
+let users = JSON.parse(localStorage.getItem('users')) || { 'user': '12345' };
 let currentUser = 'user';
 let currentDir = '~';
 let authenticated = false;
@@ -7,9 +7,40 @@ let promptElement = document.getElementById('prompt');
 let outputElement = document.getElementById('output');
 let inputElement = document.getElementById('input');
 
-const directories = {
-    '~': ['bin', 'boot', 'dev', 'etc', 'home', 'lib', 'lib64', 'media', 'mnt', 'opt', 'proc', 'root', 'run', 'sbin', 'srv', 'sys', 'tmp', 'usr', 'var'],
+const rootDirectories = {
+    '/': ['bin', 'boot', 'dev', 'etc', 'home', 'lib', 'lib64', 'media', 'mnt', 'opt', 'proc', 'root', 'run', 'sbin', 'srv', 'sys', 'tmp', 'usr', 'var'],
 };
+
+const homeDirectories = ['Documents', 'Downloads', 'Music', 'Pictures', 'Videos'];
+
+function initializeFilesystem() {
+    if (!localStorage.getItem('filesystem')) {
+        const filesystem = {
+            '/': rootDirectories['/'],
+            '/home': {},
+        };
+
+        for (let user in users) {
+            if (user !== 'root') {
+                filesystem[`/home/${user}`] = homeDirectories;
+                homeDirectories.forEach(dir => {
+                    filesystem[`/home/${user}/${dir}`] = [];
+                });
+            }
+        }
+        localStorage.setItem('filesystem', JSON.stringify(filesystem));
+    }
+}
+
+function getCurrentPath() {
+    if (currentDir === '~') {
+        return `/home/${currentUser}`;
+    } else if (currentDir.startsWith('~')) {
+        return `/home/${currentUser}${currentDir.slice(1)}`;
+    } else {
+        return currentDir;
+    }
+}
 
 function updatePrompt() {
     if (isRoot) {
@@ -21,10 +52,22 @@ function updatePrompt() {
     }
 }
 
+function formatOutput(output) {
+    return output.map(item => {
+        if (item.includes('.')) {
+            return `<span style="color:pink;">${item}</span>`;
+        } else {
+            return `<span style="color:lightblue;">${item}</span>`;
+        }
+    }).join(' ');
+}
+
 async function executeCommand(command) {
     let output = '';
     let args = command.split(' ');
     let cmd = args[0];
+    let filesystem = JSON.parse(localStorage.getItem('filesystem'));
+    let path = getCurrentPath();
 
     switch (cmd) {
         case 'sudo':
@@ -34,43 +77,76 @@ async function executeCommand(command) {
                     isRoot = true;
                     authenticated = true;
                     currentUser = 'root';
+                    currentDir = '/';
                 } else {
                     output = 'Authentication failure. Hint: 12345';
                 }
             } else if ((args[1] === 'apt' && args[2] === 'update') || (args[1] === 'update')) {
-                if (authenticated) {
-                    output = 'Updating package lists...\n[=========>.........] 50%\nUpdating package lists... Done.';
-                } else {
-                    output = 'This command requires root privileges.';
+                if (!authenticated) {
+                    let password = prompt("Enter password for sudo: ");
+                    if (password === '12345') {
+                        authenticated = true;
+                    } else {
+                        output = 'Authentication failure. Hint: 12345';
+                        break;
+                    }
                 }
+                output = 'Updating package lists...\n[=========>.........] 50%\nUpdating package lists... Done.';
             } else if ((args[1] === 'apt' && args[2] === 'upgrade') || (args[1] === 'upgrade')) {
-                if (authenticated) {
-                    if (args.includes('-y')) {
+                if (!authenticated) {
+                    let password = prompt("Enter password for sudo: ");
+                    if (password === '12345') {
+                        authenticated = true;
+                    } else {
+                        output = 'Authentication failure. Hint: 12345';
+                        break;
+                    }
+                }
+                if (args.includes('-y')) {
+                    output = 'Upgrading packages...\n[====================] 100%\nUpgrading packages... Done.';
+                } else {
+                    let confirm = prompt("Do you want to continue? [Y/n]");
+                    if (confirm.toLowerCase() === 'y') {
                         output = 'Upgrading packages...\n[====================] 100%\nUpgrading packages... Done.';
                     } else {
-                        let confirm = prompt("Do you want to continue? [Y/n]");
-                        if (confirm.toLowerCase() === 'y') {
-                            output = 'Upgrading packages...\n[====================] 100%\nUpgrading packages... Done.';
-                        } else {
-                            output = 'Operation cancelled.';
-                        }
+                        output = 'Operation cancelled.';
                     }
+                }
+            } else {
+                output = `Command not found: ${command}`;
+            }
+            break;
+        case 'apt':
+            if (args[1] === 'update') {
+                output = 'Updating package lists...\n[=========>.........] 50%\nUpdating package lists... Done.';
+            } else if (args[1] === 'upgrade') {
+                if (args.includes('-y')) {
+                    output = 'Upgrading packages...\n[====================] 100%\nUpgrading packages... Done.';
                 } else {
-                    output = 'This command requires root privileges.';
+                    let confirm = prompt("Do you want to continue? [Y/n]");
+                    if (confirm.toLowerCase() === 'y') {
+                        output = 'Upgrading packages...\n[====================] 100%\nUpgrading packages... Done.';
+                    } else {
+                        output = 'Operation cancelled.';
+                    }
                 }
             } else {
                 output = `Command not found: ${command}`;
             }
             break;
         case 'ls':
-            output = directories[currentDir].join(' ');
+            let dirToDisplay = args[1] ? args[1] : path;
+            if (filesystem[dirToDisplay]) {
+                output = formatOutput(filesystem[dirToDisplay]);
+            } else {
+                output = `ls: cannot access '${args[1]}': No such file or directory`;
+            }
             break;
         case 'cd':
             if (args[1]) {
-                if (args[1] === '..') {
-                    currentDir = currentDir.split('/').slice(0, -1).join('/') || '~';
-                } else if (directories[currentDir] && directories[currentDir].includes(args[1])) {
-                    currentDir = args[1];
+                let newPath = args[1] === '..' ? path.split('/').slice(0, -1).join('/') || '/' : path + '/' + args[1];
+                if (filesystem[newPath]) {
+                    currentDir = newPath === '/' ? '/' : newPath.replace(`/home/${currentUser}`, '~');
                 } else {
                     output = `bash: cd: ${args[1]}: No such file or directory`;
                 }
@@ -79,7 +155,7 @@ async function executeCommand(command) {
             }
             break;
         case 'pwd':
-            output = currentDir;
+            output = getCurrentPath();
             break;
         case 'whoami':
             output = currentUser;
@@ -105,6 +181,12 @@ async function executeCommand(command) {
                 let password2 = prompt(`Enter the password again: `);
                 if (password1 === password2) {
                     users[newUser] = password1;
+                    localStorage.setItem('users', JSON.stringify(users));
+                    filesystem[`/home/${newUser}`] = homeDirectories;
+                    homeDirectories.forEach(dir => {
+                        filesystem[`/home/${newUser}/${dir}`] = [];
+                    });
+                    localStorage.setItem('filesystem', JSON.stringify(filesystem));
                     output = `Added user ${newUser}.`;
                 } else {
                     output = `Passwords do not match. Try again.`;
@@ -119,6 +201,7 @@ async function executeCommand(command) {
                 let password = prompt(`Password: `);
                 if (users[user] && users[user] === password) {
                     currentUser = user;
+                    currentDir = '~';
                     output = `Logged in as ${user}`;
                 } else {
                     output = 'Login incorrect';
@@ -132,6 +215,7 @@ async function executeCommand(command) {
                 isRoot = false;
                 authenticated = false;
                 currentUser = 'user';
+                currentDir = '~';
             } else {
                 output = 'No more processes left to exit.';
             }
@@ -157,6 +241,75 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
     RX errors 0  dropped 0  overruns 0  frame 0
     TX packets 0  bytes 0 (0.0 B)
     TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0`;
+            break;
+        case 'nano':
+            if (args[1]) {
+                let fileName = args[1];
+                let filePath = `${path}/${fileName}`;
+                let content = prompt('Enter file content: ');
+                filesystem[filePath] = content;
+                if (!filesystem[path].includes(fileName)) {
+                    filesystem[path].push(fileName);
+                }
+                localStorage.setItem('filesystem', JSON.stringify(filesystem));
+                output = `Created file ${fileName}.`;
+            } else {
+                output = 'Usage: nano <filename>';
+            }
+            break;
+        case 'cat':
+            let fileToRead = args[1] ? args[1] : '';
+            if (filesystem[fileToRead]) {
+                output = filesystem[fileToRead];
+            } else {
+                output = `cat: ${args[1]}: No such file or directory`;
+            }
+            break;
+        case 'mkdir':
+            if (args[1]) {
+                let dirName = args[1];
+                let dirPath = `${path}/${dirName}`;
+                filesystem[dirPath] = [];
+                if (!filesystem[path].includes(dirName)) {
+                    filesystem[path].push(dirName);
+                }
+                localStorage.setItem('filesystem', JSON.stringify(filesystem));
+                output = `Created directory ${dirName}.`;
+            } else {
+                output = 'Usage: mkdir <directory>';
+            }
+            break;
+        case 'rmdir':
+            if (args[1]) {
+                let dirName = args[1];
+                let dirPath = `${path}/${dirName}`;
+                if (filesystem[dirPath] && filesystem[dirPath].length === 0) {
+                    delete filesystem[dirPath];
+                    filesystem[path] = filesystem[path].filter(dir => dir !== dirName);
+                    localStorage.setItem('filesystem', JSON.stringify(filesystem));
+                    output = `Removed directory ${dirName}.`;
+                } else {
+                    output = `rmdir: failed to remove '${dirName}': Directory not empty or does not exist.`;
+                }
+            } else {
+                output = 'Usage: rmdir <directory>';
+            }
+            break;
+        case 'rm':
+            if (args[1]) {
+                let fileName = args[1];
+                let filePath = `${path}/${fileName}`;
+                if (filesystem[filePath]) {
+                    delete filesystem[filePath];
+                    filesystem[path] = filesystem[path].filter(file => file !== fileName);
+                    localStorage.setItem('filesystem', JSON.stringify(filesystem));
+                    output = `Removed file ${fileName}.`;
+                } else {
+                    output = `rm: cannot remove '${fileName}': No such file`;
+                }
+            } else {
+                output = 'Usage: rm <file>';
+            }
             break;
         case 'trace':
             if (args[1] === '-m') {
@@ -207,4 +360,5 @@ inputElement.addEventListener('keydown', async function (event) {
     }
 });
 
+initializeFilesystem();
 updatePrompt();
