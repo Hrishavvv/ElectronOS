@@ -13,6 +13,9 @@ Electron is a toy terminal emulator designed to simulate a Debian-based Linux en
 
 **System Information:** Display basic system information like the distro version.
 
+![image](https://github.com/Hrishavvv/Electron/assets/114722342/51493069-5fb7-458d-9220-1b1760354608)
+
+
 # Supported Commands
 `sudo su`: Access the root user.
 
