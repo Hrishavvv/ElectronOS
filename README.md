@@ -4,6 +4,8 @@ A Toy Linux Terminal written in JavaScript.
 # Overview
 Electron is a toy terminal emulator designed to simulate a Debian-based Linux environment. It supports basic commands typically found in such systems, allowing users to practice and familiarize themselves with terminal operations in a controlled, browser-based environment.
 
+![image](https://github.com/Hrishavvv/Electron/assets/114722342/51493069-5fb7-458d-9220-1b1760354608)
+
 # Features
 **User Management:** Add and switch between multiple local users.
 
@@ -12,9 +14,6 @@ Electron is a toy terminal emulator designed to simulate a Debian-based Linux en
 **File System Navigation:** Navigate through directories, list storage contents, and print the working directory.
 
 **System Information:** Display basic system information like the distro version.
-
-![image](https://github.com/Hrishavvv/Electron/assets/114722342/51493069-5fb7-458d-9220-1b1760354608)
-
 
 # Supported Commands
 `sudo su`: Access the root user.
