@@ -44,4 +44,18 @@ Electron is a toy terminal emulator designed to simulate a Debian-based Linux en
 
 `trace -t <ip addr>`: Get infromation about the entered IP Address.
 
+# v1.1.3 beta Update
+
+`mkdir <directory>`: Create a new directory.
+
+`rmdir <directory>`: Remove an empty directory.
+
+`rm <file>`: Remove a file.
+
+`rm -rf <directory>`: Remove a directory and its contents recursively.
+
+`nano <filename>`: Create or edit a file.
+
+`cat <filename>`: Display the content of a file.
+
 _More commands will be added soon..._

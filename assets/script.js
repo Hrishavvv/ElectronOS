@@ -29,6 +29,14 @@ function initializeFilesystem() {
             }
         }
         localStorage.setItem('filesystem', JSON.stringify(filesystem));
+    } else {
+        const filesystem = JSON.parse(localStorage.getItem('filesystem'));
+        for (let dir in rootDirectories) {
+            if (!filesystem[dir]) {
+                filesystem[dir] = rootDirectories[dir];
+            }
+        }
+        localStorage.setItem('filesystem', JSON.stringify(filesystem));
     }
 }
 
@@ -39,6 +47,16 @@ function getCurrentPath() {
         return `/home/${currentUser}${currentDir.slice(1)}`;
     } else {
         return currentDir;
+    }
+}
+
+function resolvePath(inputPath) {
+    if (inputPath.startsWith('/')) {
+        return inputPath;
+    } else if (inputPath.startsWith('~')) {
+        return `/home/${currentUser}${inputPath.slice(1)}`;
+    } else {
+        return `${getCurrentPath()}/${inputPath}`;
     }
 }
 
@@ -62,7 +80,18 @@ function formatOutput(output) {
     }).join(' ');
 }
 
+function isProtectedDir(path) {
+    if (path === '/') {
+        return false;
+    }
+    return rootDirectories['/'].some(dir => path.startsWith(`/${dir}`));
+}
+
 async function executeCommand(command) {
+    if (!command.trim()) {
+        return '';
+    }
+
     let output = '';
     let args = command.split(' ');
     let cmd = args[0];
@@ -135,8 +164,10 @@ async function executeCommand(command) {
             }
             break;
         case 'ls':
-            let dirToDisplay = args[1] ? args[1] : path;
-            if (filesystem[dirToDisplay]) {
+            let dirToDisplay = args[1] ? resolvePath(args[1]) : path;
+            if (isRoot && isProtectedDir(dirToDisplay)) {
+                output = `ls: cannot access '${args[1]}': Permission denied`;
+            } else if (filesystem[dirToDisplay]) {
                 output = formatOutput(filesystem[dirToDisplay]);
             } else {
                 output = `ls: cannot access '${args[1]}': No such file or directory`;
@@ -144,8 +175,10 @@ async function executeCommand(command) {
             break;
         case 'cd':
             if (args[1]) {
-                let newPath = args[1] === '..' ? path.split('/').slice(0, -1).join('/') || '/' : path + '/' + args[1];
-                if (filesystem[newPath]) {
+                let newPath = resolvePath(args[1]);
+                if (isRoot && isProtectedDir(newPath)) {
+                    output = `bash: cd: ${args[1]}: Permission denied`;
+                } else if (filesystem[newPath]) {
                     currentDir = newPath === '/' ? '/' : newPath.replace(`/home/${currentUser}`, '~');
                 } else {
                     output = `bash: cd: ${args[1]}: No such file or directory`;
@@ -162,7 +195,7 @@ async function executeCommand(command) {
             break;
         case 'uname':
             if (args[1] === '-a') {
-                output = 'Electron v1.1.2 by Hrishav';
+                output = 'Electron v1.1.3 beta by Hrishav';
             } else {
                 output = 'Usage: uname -a';
             }
@@ -245,11 +278,13 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
         case 'nano':
             if (args[1]) {
                 let fileName = args[1];
-                let filePath = `${path}/${fileName}`;
-                let content = prompt('Enter file content: ');
+                let filePath = resolvePath(fileName);
+                let content = filesystem[filePath] || '';
+                content = prompt('Enter file content: ', content);
                 filesystem[filePath] = content;
-                if (!filesystem[path].includes(fileName)) {
-                    filesystem[path].push(fileName);
+                let dir = filePath.substring(0, filePath.lastIndexOf('/'));
+                if (!filesystem[dir].includes(fileName)) {
+                    filesystem[dir].push(fileName);
                 }
                 localStorage.setItem('filesystem', JSON.stringify(filesystem));
                 output = `Created file ${fileName}.`;
@@ -258,8 +293,10 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
             }
             break;
         case 'cat':
-            let fileToRead = args[1] ? args[1] : '';
-            if (filesystem[fileToRead]) {
+            let fileToRead = args[1] ? resolvePath(args[1]) : '';
+            if (isRoot && isProtectedDir(fileToRead)) {
+                output = `cat: ${args[1]}: Permission denied`;
+            } else if (filesystem[fileToRead]) {
                 output = filesystem[fileToRead];
             } else {
                 output = `cat: ${args[1]}: No such file or directory`;
@@ -268,10 +305,11 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
         case 'mkdir':
             if (args[1]) {
                 let dirName = args[1];
-                let dirPath = `${path}/${dirName}`;
+                let dirPath = resolvePath(dirName);
                 filesystem[dirPath] = [];
-                if (!filesystem[path].includes(dirName)) {
-                    filesystem[path].push(dirName);
+                let parentDir = dirPath.substring(0, dirPath.lastIndexOf('/'));
+                if (!filesystem[parentDir].includes(dirName)) {
+                    filesystem[parentDir].push(dirName);
                 }
                 localStorage.setItem('filesystem', JSON.stringify(filesystem));
                 output = `Created directory ${dirName}.`;
@@ -282,10 +320,13 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
         case 'rmdir':
             if (args[1]) {
                 let dirName = args[1];
-                let dirPath = `${path}/${dirName}`;
-                if (filesystem[dirPath] && filesystem[dirPath].length === 0) {
+                let dirPath = resolvePath(dirName);
+                if (isRoot && isProtectedDir(dirPath)) {
+                    output = `rmdir: failed to remove '${dirName}': Permission denied`;
+                } else if (filesystem[dirPath] && filesystem[dirPath].length === 0) {
                     delete filesystem[dirPath];
-                    filesystem[path] = filesystem[path].filter(dir => dir !== dirName);
+                    let parentDir = dirPath.substring(0, dirPath.lastIndexOf('/'));
+                    filesystem[parentDir] = filesystem[parentDir].filter(dir => dir !== dirName);
                     localStorage.setItem('filesystem', JSON.stringify(filesystem));
                     output = `Removed directory ${dirName}.`;
                 } else {
@@ -296,12 +337,34 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
             }
             break;
         case 'rm':
-            if (args[1]) {
+            if (args[1] === '-rf' && args[2]) {
+                let targetPath = resolvePath(args[2]);
+                if (isRoot && isProtectedDir(targetPath)) {
+                    output = `rm: cannot remove '${args[2]}': Permission denied`;
+                } else if (filesystem[targetPath]) {
+                    function deleteRecursively(path) {
+                        if (Array.isArray(filesystem[path])) {
+                            filesystem[path].forEach(item => deleteRecursively(`${path}/${item}`));
+                        }
+                        delete filesystem[path];
+                    }
+                    deleteRecursively(targetPath);
+                    let parentDir = targetPath.substring(0, targetPath.lastIndexOf('/'));
+                    filesystem[parentDir] = filesystem[parentDir].filter(item => item !== args[2]);
+                    localStorage.setItem('filesystem', JSON.stringify(filesystem));
+                    output = `Removed ${args[2]}`;
+                } else {
+                    output = `rm: cannot remove '${args[2]}': No such file or directory`;
+                }
+            } else if (args[1]) {
                 let fileName = args[1];
-                let filePath = `${path}/${fileName}`;
-                if (filesystem[filePath]) {
+                let filePath = resolvePath(fileName);
+                if (isRoot && isProtectedDir(filePath)) {
+                    output = `rm: cannot remove '${fileName}': Permission denied`;
+                } else if (filesystem[filePath]) {
                     delete filesystem[filePath];
-                    filesystem[path] = filesystem[path].filter(file => file !== fileName);
+                    let parentDir = filePath.substring(0, filePath.lastIndexOf('/'));
+                    filesystem[parentDir] = filesystem[parentDir].filter(file => file !== fileName);
                     localStorage.setItem('filesystem', JSON.stringify(filesystem));
                     output = `Removed file ${fileName}.`;
                 } else {
