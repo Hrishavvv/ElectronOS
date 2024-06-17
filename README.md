@@ -58,4 +58,13 @@ Electron is a toy terminal emulator designed to simulate a Debian-based Linux en
 
 `cat <filename>`: Display the content of a file.
 
+**Accessing or modifying root directories is prohibited**
+
 _More commands will be added soon..._
+
+# Issues & Fixes ⚒
+**ls: cannot access 'undefined': No such file or directory**
+This issue may arise if the cached data interferes with the new implementation of LocalStorage to store data locally in the browser.
+**Fix** : Clearing cookies and site data can fix this issue
+
+_This issue will be fixed in the next update 🚀_
