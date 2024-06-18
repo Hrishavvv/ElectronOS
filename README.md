@@ -2,7 +2,6 @@
   <img src="https://github.com/Hrishavvv/Electron/assets/114722342/65651193-3ec9-4a07-a3b0-faeec8b33272" alt="Electron Logo" />
 </p>
 
-<h1 align="center">Electron</h1>
 <p align="center">A Toy Linux Terminal written in JavaScript.</p>
 
 <p align="center">
