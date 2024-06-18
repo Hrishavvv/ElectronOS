@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Terminus:wght@400&display=swap');
 
 body {
-    background: linear-gradient(135deg, #ff0099, #493240);
+    background: linear-gradient(135deg, #ff0099, #493240); /* Cyberpink gradient */
     color: lime;
     font-family: 'Terminus', 'Courier New', Courier, monospace;
     margin: 0;
@@ -17,12 +17,13 @@ body {
     width: 90%;
     height: 90%;
     padding: 20px;
-    overflow: auto; 
+    overflow: auto; /* Allow scrolling if content overflows */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     border-radius: 10px;
     position: relative;
 }
 
+/* Hide the scrollbar but allow scrolling */
 .terminal::-webkit-scrollbar {
     width: 0;
     height: 0;
