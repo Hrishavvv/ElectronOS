@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/Hrishavvv/Electron/assets/114722342/f6caa3ee-9031-4467-b537-fe09cb10259c" alt="Electron Logo" />
+  <img src="https://github.com/Hrishavvv/Electron/assets/114722342/65651193-3ec9-4a07-a3b0-faeec8b33272" alt="Electron Logo" />
 </p>
 
 <h1 align="center">Electron</h1>
@@ -27,6 +27,11 @@
   <li><strong>File System Navigation:</strong> Navigate through directories, list storage contents, and print the working directory.</li>
   <li><strong>System Information:</strong> Display basic system information like the distro version.</li>
 </ul>
+
+<h2 align="center">Screenshots</h2>
+<p align="center">
+  <img src="https://github.com/Hrishavvv/Electron/assets/114722342/8bc0b26c-8ac8-45d4-8f00-b9ae7e4a8d85" alt="screenshot" />
+</p>
 
 <h2 align="center">Supported Commands</h2>
 <ul>
