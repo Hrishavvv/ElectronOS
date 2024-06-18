@@ -102,21 +102,21 @@ async function executeCommand(command) {
         case 'sudo':
             if (args[1] === 'su') {
                 let password = prompt("Enter password for sudo: ");
-                if (password === '12345') {
+                if (password === 'photon') {
                     isRoot = true;
                     authenticated = true;
                     currentUser = 'root';
                     currentDir = '/';
                 } else {
-                    output = 'Authentication failure. Hint: 12345';
+                    output = 'Authentication failure. Hint: photon';
                 }
             } else if ((args[1] === 'apt' && args[2] === 'update') || (args[1] === 'update')) {
                 if (!authenticated) {
                     let password = prompt("Enter password for sudo: ");
-                    if (password === '12345') {
+                    if (password === 'photon') {
                         authenticated = true;
                     } else {
-                        output = 'Authentication failure. Hint: 12345';
+                        output = 'Authentication failure. Hint: photon';
                         break;
                     }
                 }
@@ -124,10 +124,10 @@ async function executeCommand(command) {
             } else if ((args[1] === 'apt' && args[2] === 'upgrade') || (args[1] === 'upgrade')) {
                 if (!authenticated) {
                     let password = prompt("Enter password for sudo: ");
-                    if (password === 'electron') {
+                    if (password === 'photon') {
                         authenticated = true;
                     } else {
-                        output = 'Authentication failure. Hint: electron';
+                        output = 'Authentication failure. Hint: photon';
                         break;
                     }
                 }
