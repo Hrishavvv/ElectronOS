@@ -64,9 +64,11 @@
   <li><code>rm -rf &lt;directory&gt;</code>: Remove a directory and its contents recursively.</li>
   <li><code>nano &lt;filename&gt;</code>: Create or edit a file.</li>
   <li><code>cat &lt;filename&gt;</code>: Display the content of a file.</li>
-  <li><code>gui --start &lt;directory&gt;</code>: Start the Desktop environment.</li>
+  <li><code>gui --start </code>: Start the Desktop environment.</li>
 </ul>
 <p><strong>Accessing or modifying root directories is prohibited.</strong></p>
+<p><strong>The GUI is under development and some features might not work</strong></p>
+<p><strong>To exit the GUI simply refresh the webpage.</strong></p>
 <p><em>More commands will be added soon...</em></p>
 
 <h2 align="center">Issues & Fixes ⚒</h2>
