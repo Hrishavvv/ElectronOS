@@ -384,6 +384,47 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
                 output = 'Usage: trace -m | trace -t <IP address>';
             }
             break;
+            case 'gui':
+            if (args[1] === '--start') {
+                // Add the necessary CSS styles for the blur effect and transition
+                const style = document.createElement('style');
+                style.innerHTML = `
+                    .blurred {
+                        filter: blur(10px);
+                        transition: filter 0.5s ease;
+                    }
+                `;
+                document.head.appendChild(style);
+
+                // Apply the blur effect to the body
+                document.body.classList.add('blurred');
+
+                // Create the iframe and set its properties
+                const iframe = document.createElement('iframe');
+                iframe.src = 'GUI/index.html';
+                iframe.style.width = '100vw';
+                iframe.style.height = '100vh';
+                iframe.style.border = 'none';
+
+                // Add an event listener to remove the blur effect once the iframe loads
+                iframe.onload = () => {
+                    document.body.classList.remove('blurred');
+                };
+
+                // Clear the body content and append the iframe
+                setTimeout(() => {
+                    document.body.innerHTML = '';
+                    document.body.appendChild(iframe);
+                }, 500); // Wait for the transition to complete
+
+                output = 'GUI started.';
+            } else if (args[1] === '--kill') {
+                location.reload();
+                output = 'GUI killed.';
+            } else {
+                output = 'Usage: gui --start | gui --kill';
+            }
+            break;
         default:
             output = `Command not found: ${command}`;
     }
