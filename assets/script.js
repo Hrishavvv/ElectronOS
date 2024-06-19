@@ -401,7 +401,7 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
 
                 // Create the iframe and set its properties
                 const iframe = document.createElement('iframe');
-                iframe.src = 'GUI/index.html';
+                iframe.src = 'assets/GUI/index.html';
                 iframe.style.width = '100vw';
                 iframe.style.height = '100vh';
                 iframe.style.border = 'none';
