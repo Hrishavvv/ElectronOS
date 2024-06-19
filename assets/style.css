@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Terminus:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@700&display=swap');
 
 body {
     background: linear-gradient(135deg, #ff0099, #493240); /* Cyberpink gradient */
     color: lime;
-    font-family: 'Terminus', 'Courier New', Courier, monospace;
+    font-family: 'Fira Code', 'Courier New', Courier, monospace;
     margin: 0;
     display: flex;
     justify-content: center;
@@ -17,11 +17,16 @@ body {
     width: 90%;
     height: 90%;
     padding: 20px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: auto; /* Allow scrolling if content overflows */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     border-radius: 10px;
     position: relative;
+}
+
+/* Hide the scrollbar but allow scrolling */
+.terminal::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }
 
 .terminal-header {
@@ -76,5 +81,5 @@ input {
     color: lime;
     outline: none;
     flex: 1;
-    font-family: 'Terminus', 'Courier New', Courier, monospace;
+    font-family: 'Fira Code', 'Courier New', Courier, monospace;
 }
