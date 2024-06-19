@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimalistic Linux GUI</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="taskbar">
+        <div id="start-menu-button">Applications</div>
+        <div id="time"></div>
+    </div>
+    <div id="start-menu-content" class="hidden">
+        <div onclick="openWindow('settings')">Settings</div>
+        <div onclick="openWindow('file-manager')">File Manager</div>
+        <div onclick="openWindow('terminal')">Terminal</div>
+        <div onclick="openWindow('chrome')">Chrome</div>
+        <div onclick="openWindow('recycle-bin')">Recycle Bin</div>
+    </div>
+    <div id="desktop"></div>
+
+    <div class="dock">
+        <div class="dock-icon" onclick="openWindow('file-manager')"><img src="icons/file-manager.png" alt="File Manager"></div>
+        <div class="dock-icon" onclick="openWindow('terminal')"><img src="icons/terminal.png" alt="Terminal"></div>
+        <div class="dock-icon" onclick="openWindow('chrome')"><img src="icons/chrome.png" alt="Chrome"></div>
+        <div class="dock-icon" onclick="openWindow('settings')"><img src="icons/settings.png" alt="Settings"></div>
+        <div class="dock-icon" onclick="openWindow('recycle-bin')"><img src="icons/recycle-bin.png" alt="Recycle Bin"></div>
+    </div>
+
+    <div class="window" id="file-manager">
+        <div class="title-bar">
+            <div class="window-controls">
+                <span class="minimize"></span>
+                <span class="maximize"></span>
+                <span class="close">&times;</span>
+            </div>
+            <span>File Manager</span>
+        </div>
+        <div class="window-content">
+            <ul class="folder-list">
+                <li>proc</li>
+                <li>etc</li>
+                <li>home
+                    <ul>
+                        <li>Pictures</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="window" id="terminal">
+        <div class="title-bar">
+            <div class="window-controls">
+                <span class="minimize"></span>
+                <span class="maximize"></span>
+                <span class="close">&times;</span>
+            </div>
+            <span>Terminal</span>
+        </div>
+        <div class="window-content">
+            <iframe src="https://sudoelectron.netlify.app" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <div class="window" id="chrome">
+        <div class="title-bar">
+            <div class="window-controls">
+                <span class="minimize"></span>
+                <span class="maximize"></span>
+                <span class="close">&times;</span>
+            </div>
+            <span>Chrome</span>
+        </div>
+        <div class="window-content">
+            <iframe src="https://www.google.com" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <div class="window" id="settings">
+        <div class="title-bar">
+            <div class="window-controls">
+                <span class="minimize"></span>
+                <span class="maximize"></span>
+                <span class="close">&times;</span>
+            </div>
+            <span>Settings</span>
+        </div>
+        <div class="window-content">
+            <div class="tabs">
+                <button class="tablink" onclick="openTab(event, 'Display')">Display</button>
+                <button class="tablink" onclick="openTab(event, 'Personalization')">Personalization</button>
+                <button class="tablink" onclick="openTab(event, 'About')">About</button>
+            </div>
+            <div id="Display" class="tabcontent">
+                <h3>Display Settings</h3>
+                <label for="font-size">Font Size:</label>
+                <input type="number" id="font-size" name="font-size" min="10" max="30" value="16">
+                <br>
+                <label for="icon-size">Icon Size:</label>
+                <input type="number" id="icon-size" name="icon-size" min="16" max="64" value="32">
+                <br>
+                <label for="mode">Mode:</label>
+                <select id="mode" name="mode">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+            </div>
+            <div id="Personalization" class="tabcontent">
+                <h3>Personalization</h3>
+                <label for="bg-upload">Upload Background:</label>
+                <input type="file" id="bg-upload">
+                <br>
+                <div id="uploaded-images"></div>
+            </div>
+            <div id="About" class="tabcontent">
+                <h3>About</h3>
+                <p>Electron v1.1.3 beta</p>
+                <p>Developed by Hrishav</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="window" id="recycle-bin">
+        <div class="title-bar">
+            <div class="window-controls">
+                <span class="minimize"></span>
+                <span class="maximize"></span>
+                <span class="close">&times;</span>
+            </div>
+            <span>Recycle Bin</span>
+        </div>
+        <div class="window-content">
+            <p>Dummy list of items.</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
