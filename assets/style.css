@@ -1,9 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap');
 
 body {
-    background: linear-gradient(135deg, #ff0099, #493240); /* Cyberpink gradient */
+    background: linear-gradient(135deg, #000000, #1A1A1A); /* Cyberpunk gradient */
     color: lime;
-    font-family: 'Fira Code', 'Courier New', Courier, monospace;
+    font-family: 'Roboto Mono', 'Courier New', Courier, monospace;
+    font-weight: bold;
     margin: 0;
     display: flex;
     justify-content: center;
@@ -81,5 +82,6 @@ input {
     color: lime;
     outline: none;
     flex: 1;
-    font-family: 'Fira Code', 'Courier New', Courier, monospace;
+    font-family: 'Roboto Mono', 'Courier New', Courier, monospace;
+    font-weight: bold;
 }
