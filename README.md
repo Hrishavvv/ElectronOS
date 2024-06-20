@@ -28,8 +28,14 @@
 </ul>
 
 <h2 align="center">Screenshots</h2>
+<h3 align="center">CLI (Command Line Interface)</h3>
 <p align="center">
   <img src="https://github.com/Hrishavvv/Electron/assets/114722342/8bc0b26c-8ac8-45d4-8f00-b9ae7e4a8d85" alt="screenshot" />
+</p>
+
+<h3 align="center">GUI (Graphical User Interface)</h3>
+<p align="center">
+  <img src="https://github.com/Hrishavvv/Electron/assets/114722342/d3896fbe-1247-4eba-9543-5fbbd858b9f0" />
 </p>
 
 <h2 align="center">Supported Commands</h2>
@@ -58,8 +64,11 @@
   <li><code>rm -rf &lt;directory&gt;</code>: Remove a directory and its contents recursively.</li>
   <li><code>nano &lt;filename&gt;</code>: Create or edit a file.</li>
   <li><code>cat &lt;filename&gt;</code>: Display the content of a file.</li>
+  <li><code>gui --start </code>: Start the Desktop environment.</li>
 </ul>
 <p><strong>Accessing or modifying root directories is prohibited.</strong></p>
+<p><strong>The GUI is under development and some features might not work</strong></p>
+<p><strong>To exit the GUI simply refresh the webpage.</strong></p>
 <p><em>More commands will be added soon...</em></p>
 
 <h2 align="center">Issues & Fixes ⚒</h2>
