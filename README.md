@@ -30,7 +30,7 @@
 <h2 align="center">Screenshots</h2>
 <h3 align="center">CLI (Command Line Interface)</h3>
 <p align="center">
-  <img src="https://github.com/Hrishavvv/Electron/assets/114722342/8bc0b26c-8ac8-45d4-8f00-b9ae7e4a8d85" alt="screenshot" />
+  <img src="https://github.com/Hrishavvv/Electron/assets/114722342/f6bc5fdb-d409-4e00-a285-e7d912be66d4" alt="screenshot" />
 </p>
 
 <h3 align="center">GUI (Graphical User Interface)</h3>
