@@ -67,7 +67,7 @@
   <li><code>gui --start </code>: Start the Desktop environment.</li>
 </ul>
 <p><strong>Accessing or modifying root directories is prohibited.</strong></p>
-<p><strong>The GUI is under development and some features might not work</strong></p>
+<p><strong>The GUI is under development and some features might not work!</strong></p>
 <p><strong>To exit the GUI simply refresh the webpage.</strong></p>
 <p><em>More commands will be added soon...</em></p>
 
