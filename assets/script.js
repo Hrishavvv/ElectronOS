@@ -62,10 +62,10 @@ function resolvePath(inputPath) {
 
 function updatePrompt() {
     if (isRoot) {
-        promptElement.textContent = `root@kalki:${currentDir}# `;
+        promptElement.textContent = `root@electron:${currentDir}# `;
         promptElement.style.color = 'red';
     } else {
-        promptElement.textContent = `${currentUser}@kalki:${currentDir}$ `;
+        promptElement.textContent = `${currentUser}@electron:${currentDir}$ `;
         promptElement.style.color = 'violet';
     }
 }
@@ -195,7 +195,7 @@ async function executeCommand(command) {
             break;
         case 'uname':
             if (args[1] === '-a') {
-                output = 'KalkiOS v1.1.3 (beta)';
+                output = 'Electron v1.1.3 (beta)';
             } else {
                 output = 'Usage: uname -a';
             }
