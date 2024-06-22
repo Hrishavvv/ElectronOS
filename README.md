@@ -5,19 +5,19 @@
 <p align="center">A Toy Linux Terminal written in JavaScript.</p>
 
 <p align="center">
-  <a href="https://github.com/Hrishavvv/Electron/issues">
+  <a href="https://github.com/Hrishavvv/KalkiOS/issues">
     <img alt="Issues" src="https://img.shields.io/github/issues/Hrishavvv/Electron" />
   </a>
-  <a href="https://github.com/Hrishavvv/Electron/stargazers">
+  <a href="https://github.com/Hrishavvv/KalkiOS/stargazers">
     <img alt="Stars" src="https://img.shields.io/github/stars/Hrishavvv/Electron" />
   </a>
-  <a href="https://github.com/Hrishavvv/Electron/blob/main/LICENSE">
+  <a href="https://github.com/Hrishavvv/KalkiOS/blob/main/LICENSE">
     <img alt="License" src="https://img.shields.io/github/license/Hrishavvv/Electron" />
   </a>
 </p>
 
 <h2 align="center">Overview</h2>
-<p align="center">Electron is a toy terminal emulator designed to simulate a Debian-based Linux environment. It supports basic commands typically found in such systems, allowing users to practice and familiarize themselves with terminal operations in a controlled, browser-based environment.</p>
+<p align="center">KalkiOS is a toy Linux emulator designed to simulate a Debian-based Linux environment. It supports basic commands typically found in such systems, allowing users to practice and familiarize themselves with terminal operations in a controlled, browser-based environment.</p>
 
 <h2 align="center">Features</h2>
 <ul>
@@ -30,12 +30,12 @@
 <h2 align="center">Screenshots</h2>
 <h3 align="center">CLI (Command Line Interface)</h3>
 <p align="center">
-  <img src="https://github.com/Hrishavvv/Electron/assets/114722342/f6bc5fdb-d409-4e00-a285-e7d912be66d4" alt="screenshot" />
+  <img src="https://github.com/Hrishavvv/KalkiOS/assets/114722342/f6bc5fdb-d409-4e00-a285-e7d912be66d4" alt="screenshot" />
 </p>
 
 <h3 align="center">GUI (Graphical User Interface)</h3>
 <p align="center">
-  <img src="https://github.com/Hrishavvv/Electron/assets/114722342/d3896fbe-1247-4eba-9543-5fbbd858b9f0" />
+  <img src="https://github.com/Hrishavvv/KalkiOS/assets/114722342/d3896fbe-1247-4eba-9543-5fbbd858b9f0" />
 </p>
 
 <h2 align="center">Supported Commands</h2>
