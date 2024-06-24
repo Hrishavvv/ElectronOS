@@ -2,7 +2,7 @@
   <img src="https://github.com/Hrishavvv/Electron/assets/114722342/65651193-3ec9-4a07-a3b0-faeec8b33272" alt="Electron Logo" />
 </p>
 
-<p align="center">A Toy Linux Distro written in JavaScript.</p>
+<p align="center">A Toy Linux Distro written in JavaScript</p>
 
 <p align="center">
   <a href="https://github.com/Hrishavvv/Electron/issues">
