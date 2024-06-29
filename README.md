@@ -2,7 +2,7 @@
   <img src="https://github.com/Hrishavvv/Electron/assets/114722342/65651193-3ec9-4a07-a3b0-faeec8b33272" alt="Electron Logo" />
 </p>
 
-<p align="center">A Toy Linux Terminal written in JavaScript.</p>
+<p align="center">A Toy Linux Distro written in JavaScript</p>
 
 <p align="center">
   <a href="https://github.com/Hrishavvv/Electron/issues">
@@ -17,7 +17,7 @@
 </p>
 
 <h2 align="center">Overview</h2>
-<p align="center">Electron is a toy Linux emulator designed to simulate a Debian-based Linux environment. It supports basic commands typically found in such systems, allowing users to practice and familiarize themselves with terminal operations in a controlled, browser-based environment.</p>
+<p align="center">ElectronOS is a toy Linux emulator designed to simulate a Debian-based Linux environment. It supports basic commands typically found in such systems, allowing users to practice and familiarize themselves with terminal operations in a controlled, browser-based environment.</p>
 
 <h2 align="center">Features</h2>
 <ul>
