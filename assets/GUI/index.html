@@ -60,21 +60,274 @@
     </script>
     
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <div class="window" id="file-manager">
-        <div class="title-bar">
-            <div class="window-controls">
-                <span class="minimize"></span>
-                <span class="maximize"></span>
-                <span class="close"> </span>
-            </div>
-            <span>File Manager</span>
+    <div class="title-bar">
+        <div class="window-controls">
+            <span class="minimize"></span>
+            <span class="maximize"></span>
+            <span class="close"></span>
         </div>
-        <div class="window-content">
-            <ul class="folder-list">
-                This part is under development 🚧
-            </ul>
-        </div>
+        <span>File Manager</span>
     </div>
+    <div class="window-content">
+        <div id="file-manager-header">
+            <button id="back-button" style="display:none;">
+                <img src="icons/back.png" alt="Back Icon" style="width: 30px; height: 30px;">
+            </button>
+        </div>
+        <div id="file-list" class="folder-list"></div>
+    </div>
+</div>
+
+<div id="image-modal" style="display:none;">
+    <div style="position:fixed; top:50%; left:50%; transform: translate(-50%, -50%); background-color:white; padding:20px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); border-radius:8px; width: 500px; height: 350px;">
+        <button id="close-modal" style="cursor:pointer; border:none; background-color:transparent; padding: 5px 10px; font-size: 20px; position: absolute; top: 10px; left: 10px;">
+            <i class="fas fa-times"></i>
+        </button>
+        <img id="modal-image" src="" style="max-width: 100%; max-height: 80%; object-fit: contain; margin: 20px auto; display: block;">
+        <div id="modal-title" style="position: absolute; bottom: 10px; left: 10px; font-size: 18px; font-weight: bold; color: #333;"></div>
+    </div>
+</div>
+
+<div id="context-menu" style="position: absolute; display: none; background: rgba(255, 255, 255, 0.8); box-shadow: 0 2px 10px rgba(0,0,0,0.2); padding: 5px; border-radius: 5px; backdrop-filter: blur(5px);">
+    <button id="rename-button" style="border: none; background: transparent; padding: 5px; cursor: pointer;">
+        <i class="fas fa-edit"></i> Rename
+    </button>
+    <button id="delete-button" style="border: none; background: transparent; padding: 5px; cursor: pointer;">
+        <i class="fas fa-trash"></i> Delete
+    </button>
+</div>
+
+<style>
+    #file-list {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    .folder-item {
+        text-align: center;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .folder-item img {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 5px;
+    }
+
+    .folder-name {
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    #back-button {
+        background: transparent;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        margin-bottom: 10px;
+    }
+
+    #file-manager-header {
+        margin-bottom: 10px;
+    }
+
+    #image-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    #context-menu {
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const fileList = document.getElementById("file-list");
+        const backButton = document.getElementById("back-button");
+        const imageModal = document.getElementById("image-modal");
+        const modalImage = document.getElementById("modal-image");
+        const closeModalButton = document.getElementById("close-modal");
+        const modalTitle = document.getElementById("modal-title");
+        const contextMenu = document.getElementById("context-menu");
+        const deleteButton = document.getElementById("delete-button");
+        const renameButton = document.getElementById("rename-button");
+
+        let fileStructure = JSON.parse(localStorage.getItem('fileStructure')) || {
+            '/': [
+                { name: 'Documents', isDirectory: true, path: '/Documents' },
+                { name: 'Pictures', isDirectory: true, path: '/Pictures' },
+                { name: 'Videos', isDirectory: true, path: '/Videos' },
+                { name: 'Music', isDirectory: true, path: '/Music' },
+                { name: 'Archives', isDirectory: true, path: '/Archives' },
+                { name: 'Downloads', isDirectory: true, path: '/Downloads' },
+                { name: 'Desktop', isDirectory: true, path: '/Desktop' },
+                { name: 'Programs', isDirectory: true, path: '/Programs' }
+            ],
+            '/Pictures': [
+                { name: 'Outlast.jpg', isDirectory: false, path: 'Pictures/Outlast.jpg', type: 'image' },
+                { name: 'ResidentEvil4.jpg', isDirectory: false, path: 'Pictures/ResidentEvil4.jpg', type: 'image' },
+                { name: 'SilentHill2.jpg', isDirectory: false, path: 'Pictures/SilentHill2.jpg', type: 'image' }
+            ]
+        };
+
+        let currentPath = '/';
+        let rightClickedFile = null;
+
+        function loadFiles() {
+            fileList.innerHTML = '';
+            const filesInCurrentDir = fileStructure[currentPath] || [];
+            backButton.style.display = currentPath !== '/' ? 'block' : 'none';
+
+            filesInCurrentDir.forEach(file => {
+                const li = document.createElement("div");
+                li.classList.add("folder-item");
+
+                if (file.isDirectory) {
+                    li.innerHTML = `
+                        <img src="icons/folders.png" alt="Folder Icon">
+                        <div class="folder-name">${file.name}</div>
+                    `;
+                    li.addEventListener("click", function() {
+                        currentPath = file.path;
+                        loadFiles();
+                    });
+                } else {
+                    li.innerHTML = `
+                        <img src="icons/pics.png" alt="Picture Icon">
+                        <div class="folder-name">${file.name}</div>
+                    `;
+                    li.addEventListener("click", function() {
+                        openImage(file.path, file.name);
+                    });
+
+                    li.addEventListener('contextmenu', function(event) {
+                        event.preventDefault();
+                        rightClickedFile = file;
+                        contextMenu.style.display = 'block';
+                        contextMenu.style.left = `${event.pageX}px`;
+                        contextMenu.style.top = `${event.pageY}px`;
+                    });
+                }
+
+                fileList.appendChild(li);
+            });
+
+            if (currentPath === '/Pictures') {
+                const plusButton = document.createElement("div");
+                plusButton.classList.add("folder-item");
+                plusButton.innerHTML = `
+                    <img src="icons/plus.png" alt="Plus Icon" style="width: 60px; height: 60px;">
+                    <div class="folder-name">Upload Image</div>
+                `;
+                plusButton.addEventListener("click", function() {
+                    openUploadDialog();
+                });
+                fileList.appendChild(plusButton);
+            }
+        }
+
+        backButton.addEventListener("click", function() {
+            const pathParts = currentPath.split('/');
+            pathParts.pop();
+            currentPath = pathParts.join('/') || '/';
+            loadFiles();
+        });
+
+        function openImage(imagePath, imageName) {
+            modalImage.src = imagePath;
+            modalTitle.textContent = imageName;
+            imageModal.style.display = 'flex';
+        }
+
+        closeModalButton.addEventListener("click", function() {
+            imageModal.style.display = 'none';
+        });
+
+        function openUploadDialog() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = handleFileSelect;
+            input.click();
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const newImage = {
+                        name: prompt("Enter image name:", file.name),
+                        isDirectory: false,
+                        path: e.target.result,
+                        type: 'image'
+                    };
+
+                    if (!fileStructure['/Pictures']) {
+                        fileStructure['/Pictures'] = [];
+                    }
+                    fileStructure['/Pictures'].push(newImage);
+                    localStorage.setItem('fileStructure', JSON.stringify(fileStructure));
+                    loadFiles();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        deleteButton.addEventListener("click", function() {
+            const index = fileStructure['/Pictures'].indexOf(rightClickedFile);
+            if (index !== -1) {
+                fileStructure['/Pictures'].splice(index, 1);
+                localStorage.setItem('fileStructure', JSON.stringify(fileStructure));
+                loadFiles();
+            }
+            contextMenu.style.display = 'none';
+        });
+
+        renameButton.addEventListener("click", function() {
+            const newName = prompt("Enter new name:", rightClickedFile.name);
+            if (newName) {
+                rightClickedFile.name = newName;
+                localStorage.setItem('fileStructure', JSON.stringify(fileStructure));
+                loadFiles();
+            }
+            contextMenu.style.display = 'none';
+        });
+
+        window.addEventListener("click", function() {
+            contextMenu.style.display = 'none';
+        });
+
+        loadFiles();
+    });
+</script>
+
 
     <div class="window" id="terminal">
         <div class="title-bar">
