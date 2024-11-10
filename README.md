@@ -37,7 +37,7 @@
 <p align="center">
   <img src="https://github.com/Hrishavvv/Electron/assets/114722342/d3896fbe-1247-4eba-9543-5fbbd858b9f0" />
 </p>
-<h4>Can be started using 'gui --start'/h4>
+<h4>Can be started using 'gui --start'</h4>
 
 <h2 align="center">Supported Commands</h2>
 <ul>
