@@ -71,11 +71,16 @@
 <p><strong>To exit the GUI simply refresh the webpage.</strong></p>
 <p><em>More commands will be added soon...</em></p>
 
-<h2 align="center">v1.1.4</h2>
+<h2 align="center">v1.1.4 update</h2>
 <h3 align="left">Added a functional file manager</h3>
-![image](https://github.com/user-attachments/assets/f2c414c0-8097-443e-a76e-988a5f0b7b72)
-<h4 align="left">A funnctional Pictures sub-folder</h4>
-![image](https://github.com/user-attachments/assets/a51deefc-8e68-4177-a015-6cc440bf5b8b)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/36efb44f-3fb9-489a-b888-8bb14cd4cae1" alt="screenshot" />
+</p>
+<h4 align="left">A funnctional 'Pictures' sub-folder</h4>
+<p align="center">
+  <img src="![Uploading image.png…]()
+" alt="screenshot" />
+</p>
 
 <h2 align="center">Issues & Fixes ⚒</h2>
 <p><strong>ls: cannot access 'undefined': No such file or directory:</strong> This issue may arise if the cached data interferes with the new implementation of <em>LocalStorage</em> to store data locally in the browser.</p>
