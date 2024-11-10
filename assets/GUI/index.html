@@ -42,9 +42,23 @@
             <span>Minecraft</span>
         </div>
         <div class="window-content">
-            <iframe src="https://eaglercraft.com/mc/1.8.8/" frameborder="0"></iframe>
+            <iframe src="minecraft/minecraft.html" frameborder="0" tabindex="0"></iframe>
         </div>
     </div>
+    
+    <script>
+        const windowElement = document.getElementById('minecraft');
+        const iframe = windowElement.querySelector('iframe');
+    
+        windowElement.addEventListener('click', () => {
+            iframe.focus();
+        });
+    
+        iframe.addEventListener('load', () => {
+            iframe.focus();
+        });
+    </script>
+    
 
     <div class="window" id="file-manager">
         <div class="title-bar">
