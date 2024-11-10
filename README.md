@@ -1,4 +1,4 @@
-<p align="center">
+![image](https://github.com/user-attachments/assets/98cac53a-a096-4591-b060-57b88df7e26a)<p align="center">
   <img src="https://github.com/Hrishavvv/Electron/assets/114722342/65651193-3ec9-4a07-a3b0-faeec8b33272" alt="Electron Logo" />
 </p>
 
@@ -82,7 +82,10 @@
 </p>
 <h3 align="left">A funnctional 'Pictures' sub-folder</h3>
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/879bdebf-d4c2-45eb-a90d-5c164c974804" alt="screenshot" />
+  <img src="https://github.com/user-attachments/assets/cdc7123a-757f-4b22-970e-44f0978510a5" alt="screenshot" />
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/cf026207-ad7d-4a08-9300-6ab4e7d22592" alt="screenshot" />
 </p>
 
 <h2 align="center">Issues & Fixes ⚒</h2>
