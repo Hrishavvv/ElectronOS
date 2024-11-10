@@ -58,27 +58,27 @@
         <div class="dock-icon" onclick="openWindow('terminal')"><img src="icons/terminal.png" alt="Terminal"></div>
         <div class="dock-icon" onclick="openWindow('chrome')"><img src="icons/chrome.png" alt="Chrome"></div>
 
-        <div class="dock-icon" onclick="openWindow('minecraft')"><img src="icons/mine.png" alt="minecraft"></div>
+        <div class="dock-icon" onclick="openWindow('game')"><img src="icons/game.png" alt="game"></div>
         <div class="dock-icon" onclick="openWindow('settings')"><img src="icons/settings.png" alt="Settings"></div>
         <div class="dock-icon" onclick="openWindow('recycle-bin')"><img src="icons/recycle-bin.png" alt="Recycle Bin"></div>
     </div>
 
-    <div class="window" id="minecraft">
+    <div class="window" id="game">
         <div class="title-bar">
             <div class="window-controls">
                 <span class="minimize"></span>
                 <span class="maximize"></span>
                 <span class="close"></span>
             </div>
-            <span>Minecraft</span>
+            <span>Sonic the Hedgehog</span>
         </div>
         <div class="window-content">
-            <iframe src="https://eaglercraft.com/mc/1.8.8/" frameborder="0" tabindex="0"></iframe>
+            <iframe src="https://clarkeadg.github.io/opensonic-js/" frameborder="0" tabindex="0"></iframe>
         </div>
     </div>
     
     <script>
-        const windowElement = document.getElementById('minecraft');
+        const windowElement = document.getElementById('game');
         const iframe = windowElement.querySelector('iframe');
     
         windowElement.addEventListener('click', () => {
