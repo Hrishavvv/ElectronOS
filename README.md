@@ -73,10 +73,6 @@
 <p><em>More commands will be added soon...</em></p>
 
 <h2 align="center">v1.1.4 update</h2>
-<h3 align="left">Play Minecraft on Electron OS via Eaglercraft</h3>
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/998460ce-2058-4795-95d5-92b97a25b0ba" alt="screenshot" />
-</p>
 <h3 align="left">A functional File Manager</h3>
 <p align="center">
   <img src="https://github.com/user-attachments/assets/36efb44f-3fb9-489a-b888-8bb14cd4cae1" alt="screenshot" />
