@@ -37,6 +37,7 @@
 <p align="center">
   <img src="https://github.com/Hrishavvv/Electron/assets/114722342/d3896fbe-1247-4eba-9543-5fbbd858b9f0" />
 </p>
+<h4>Can be started using 'gui --start'</h4>
 
 <h2 align="center">Supported Commands</h2>
 <ul>
@@ -70,6 +71,23 @@
 <p><strong>The GUI is under development and some features might not work!</strong></p>
 <p><strong>To exit the GUI simply refresh the webpage.</strong></p>
 <p><em>More commands will be added soon...</em></p>
+
+<h2 align="center">v1.1.4 update</h2>
+<h3 align="left">Play Minecraft on Electron OS via Eaglercraft</h3>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/998460ce-2058-4795-95d5-92b97a25b0ba" alt="screenshot" />
+</p>
+<h3 align="left">A functional File Manager</h3>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/36efb44f-3fb9-489a-b888-8bb14cd4cae1" alt="screenshot" />
+</p>
+<h3 align="left">A functional 'Pictures' sub-folder</h3>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/cdc7123a-757f-4b22-970e-44f0978510a5" alt="screenshot" />
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/cf026207-ad7d-4a08-9300-6ab4e7d22592" alt="screenshot" />
+</p>
 
 <h2 align="center">Issues & Fixes ⚒</h2>
 <p><strong>ls: cannot access 'undefined': No such file or directory:</strong> This issue may arise if the cached data interferes with the new implementation of <em>LocalStorage</em> to store data locally in the browser.</p>
