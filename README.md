@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/98cac53a-a096-4591-b060-57b88df7e26a)<p align="center">
+<p>
   <img src="https://github.com/Hrishavvv/Electron/assets/114722342/65651193-3ec9-4a07-a3b0-faeec8b33272" alt="Electron Logo" />
 </p>
 
