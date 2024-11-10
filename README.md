@@ -81,7 +81,7 @@
 <p align="center">
   <img src="https://github.com/user-attachments/assets/36efb44f-3fb9-489a-b888-8bb14cd4cae1" alt="screenshot" />
 </p>
-<h3 align="left">A funnctional 'Pictures' sub-folder</h3>
+<h3 align="left">A functional 'Pictures' sub-folder</h3>
 <p align="center">
   <img src="https://github.com/user-attachments/assets/cdc7123a-757f-4b22-970e-44f0978510a5" alt="screenshot" />
 </p>
