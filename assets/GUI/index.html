@@ -124,15 +124,55 @@
                 <label for="font-size">Font Size:</label>
                 <input type="number" id="font-size" name="font-size" min="10" max="30" value="16">
                 <br>
-                <label for="icon-size">Icon Size:</label>
-                <input type="number" id="icon-size" name="icon-size" min="16" max="64" value="32">
-                <br>
                 <label for="mode">Mode:</label>
                 <select id="mode" name="mode">
                     <option value="light">Light</option>
                     <option value="dark">Dark</option>
                 </select>
             </div>
+            
+            <script>
+                const fontSizeInput = document.getElementById('font-size');
+                const modeSelect = document.getElementById('mode');
+                const body = document.body;
+                const dock = document.querySelector('.dock');
+                const taskbar = document.getElementById('taskbar');
+                const windows = document.querySelectorAll('.window');
+            
+                function applySettings() {
+                    const fontSize = fontSizeInput.value + "px";
+                    body.style.fontSize = fontSize;
+            
+                    if (modeSelect.value === "dark") {
+                        body.classList.add('dark-mode');
+                        dock.classList.add('dark-mode');
+                        taskbar.classList.add('dark-mode');
+                        windows.forEach(window => window.classList.add('dark-mode'));
+                    } else {
+                        body.classList.remove('dark-mode');
+                        dock.classList.remove('dark-mode');
+                        taskbar.classList.remove('dark-mode');
+                        windows.forEach(window => window.classList.remove('dark-mode'));
+                    }
+            
+                    localStorage.setItem('fontSize', fontSizeInput.value);
+                    localStorage.setItem('mode', modeSelect.value);
+                }
+            
+                fontSizeInput.addEventListener('input', applySettings);
+                modeSelect.addEventListener('change', applySettings);
+            
+                window.addEventListener('DOMContentLoaded', () => {
+                    const savedFontSize = localStorage.getItem('fontSize');
+                    const savedMode = localStorage.getItem('mode');
+                    
+                    if (savedFontSize) fontSizeInput.value = savedFontSize;
+                    if (savedMode) modeSelect.value = savedMode;
+                    
+                    applySettings();
+                });
+            </script>                      
+            
             <div id="Personalization" class="tabcontent">
                 <h3>Personalization</h3>
                 <label for="bg-upload">Upload Background:</label>
@@ -142,7 +182,7 @@
             </div>
             <div id="About" class="tabcontent">
                 <h3>About</h3>
-                <p style="color: purple; font-weight: bold;">Electron OS</p>
+                <p style="color: whitesmoke; font-weight: bold;">Electron OS</p>
                 <p style="display: flex; align-items: center;">
                     Developed by Hrishav
                     <a href="https://github.com/Hrishavvv/ElectronOS" target="_blank" style="margin-left: 8px;">
