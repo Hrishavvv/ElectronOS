@@ -50,6 +50,7 @@
         <div onclick="openWindow('terminal')">Terminal</div>
         <div onclick="openWindow('chrome')">Chrome</div>
         <div onclick="openWindow('recycle-bin')">Recycle Bin</div>
+        <div onclick="openWindow('pdf-viewer')">PDF Viewer</div>
     </div>
     <div id="desktop"></div>
 
@@ -59,6 +60,7 @@
         <div class="dock-icon" onclick="openWindow('chrome')"><img src="icons/chrome.png" alt="Chrome"></div>
 
         <div class="dock-icon" onclick="openWindow('game')"><img src="icons/game.png" alt="game"></div>
+        <div class="dock-icon" onclick="openWindow('pdf-viewer')"><img src="icons/pdf.png" alt="PDF Viewer"></div>
         <div class="dock-icon" onclick="openWindow('settings')"><img src="icons/settings.png" alt="Settings"></div>
         <div class="dock-icon" onclick="openWindow('recycle-bin')"><img src="icons/recycle-bin.png" alt="Recycle Bin"></div>
     </div>
@@ -74,6 +76,20 @@
         </div>
         <div class="window-content">
             <iframe src="https://clarkeadg.github.io/opensonic-js/" frameborder="0" tabindex="0"></iframe>
+        </div>
+    </div>
+
+    <div class="window" id="pdf-viewer">
+        <div class="title-bar">
+            <div class="window-controls">
+                <span class="minimize"></span>
+                <span class="maximize"></span>
+                <span class="close"></span>
+            </div>
+            <span>PDF Viewer</span>
+        </div>
+        <div class="window-content">
+            <iframe src="pdf.html" frameborder="0" tabindex="0"></iframe>
         </div>
     </div>
     
