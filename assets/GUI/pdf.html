@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Viewer</title>
+  <style>
+    /* General Styles */
+    body {
+      background: #f3f4f6;
+      color: #1f2937;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark {
+      background: #1f2937;
+      color: #f3f4f6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Theme Toggle */
+    #theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px;
+      background: #e5e7eb;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s;
+      z-index: 1000;
+    }
+
+    body.dark #theme-toggle {
+      background: #4b5563;
+    }
+
+    #theme-toggle svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Drag and Drop Zone */
+    #drop-zone {
+      border: 2px dashed #9ca3af;
+      padding: 40px;
+      text-align: center;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      margin: 20px 0;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    body.dark #drop-zone {
+      background: #374151;
+      border-color: #6b7280;
+    }
+
+    #drop-zone.dragover {
+      border-color: #3b82f6;
+      background: #e0f2fe;
+    }
+
+    #drop-zone p {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    /* PDF Gallery */
+    #pdf-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 20px;
+    }
+
+    .pdf-card {
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      position: relative;
+    }
+
+    body.dark .pdf-card {
+      background: #374151;
+    }
+
+    .pdf-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .pdf-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .pdf-card p {
+      margin: 10px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    /* Context Menu for Delete */
+    .context-menu {
+      position: absolute;
+      background: #ffffff;
+      border-radius: 5px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      display: none;
+    }
+
+    body.dark .context-menu {
+      background: #374151;
+    }
+
+    .context-menu button {
+      display: block;
+      padding: 10px 20px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .context-menu button:hover {
+      background: #e5e7eb;
+    }
+
+    body.dark .context-menu button:hover {
+      background: #4b5563;
+    }
+
+    /* PDF Viewer Modal */
+    #pdf-viewer-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px); /* Blurred background */
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    #pdf-viewer {
+      width: 100vw;
+      height: 100vh;
+      background: transparent; /* No background for full-screen */
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    #pdf-canvas-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: auto;
+    }
+
+    #pdf-canvas {
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+      background: #ffffff; /* Nicer page appearance */
+      border: 1px solid #e5e7eb;
+      max-width: 95%; /* Larger page */
+      max-height: 95%; /* Larger page */
+    }
+
+    body.dark #pdf-canvas {
+      background: #f3f4f6;
+      border-color: #4b5563;
+    }
+
+    #close-viewer {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 30px;
+      color: #ef4444;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 5px 10px;
+      z-index: 1000;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Theme Toggle -->
+  <button id="theme-toggle">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+    </svg>
+  </button>
+
+  <!-- Drag and Drop Area -->
+  <div id="drop-zone" class="container">
+    <p>Drag & Drop PDFs here or click to upload</p>
+    <input type="file" id="pdf-upload" accept=".pdf" multiple style="display: none;">
+  </div>
+
+  <!-- PDF Gallery -->
+  <div id="pdf-gallery" class="container"></div>
+
+  <!-- Context Menu for Delete -->
+  <div id="context-menu" class="context-menu">
+    <button id="delete-pdf">Delete PDF</button>
+  </div>
+
+  <!-- PDF Viewer Modal -->
+  <div id="pdf-viewer-modal">
+    <div id="pdf-viewer">
+      <button id="close-viewer">✕</button>
+      <div id="pdf-canvas-container">
+        <canvas id="pdf-canvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
+  <script>
+    // Initialize PDF.js worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js';
+
+    let pdfs = [];
+    let currentPdf = null;
+    let currentPage = 1;
+    let scale = 2.0; // Increased default scale for larger pages
+    const canvas = document.getElementById('pdf-canvas');
+    const context = canvas.getContext('2d');
+    let selectedPdfIndex = null;
+
+    // Theme Toggle
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+    });
+
+    // Drag and Drop
+    const dropZone = document.getElementById('drop-zone');
+    const pdfUpload = document.getElementById('pdf-upload');
+    const pdfGallery = document.getElementById('pdf-gallery');
+    const contextMenu = document.getElementById('context-menu');
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      handleFiles(files);
+    });
+
+    dropZone.addEventListener('click', () => pdfUpload.click());
+
+    pdfUpload.addEventListener('change', () => {
+      handleFiles(pdfUpload.files);
+      pdfUpload.value = '';
+    });
+
+    async function handleFiles(files) {
+      for (const file of files) {
+        if (file.type === 'application/pdf') {
+          const url = URL.createObjectURL(file);
+          try {
+            const pdfDoc = await pdfjsLib.getDocument(url).promise;
+            const page = await pdfDoc.getPage(1);
+            const viewport = page.getViewport({ scale: 0.3 });
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            await page.render({ canvasContext: context, viewport }).promise;
+
+            const card = document.createElement('div');
+            card.className = 'pdf-card';
+            card.dataset.index = pdfs.length;
+            card.innerHTML = `
+              <img src="${canvas.toDataURL()}" alt="${file.name}">
+              <p>${file.name}</p>
+            `;
+            card.addEventListener('click', () => openPdf(url, file.name));
+            card.addEventListener('contextmenu', (e) => showContextMenu(e, card.dataset.index));
+            pdfGallery.appendChild(card);
+
+            pdfs.push({ url, name: file.name });
+          } catch (error) {
+            console.error('Error loading PDF:', error);
+            alert(`Failed to load ${file.name}. Try serving via a local server.`);
+          }
+        }
+      }
+    }
+
+    // Context Menu for Delete
+    function showContextMenu(e, index) {
+      e.preventDefault();
+      selectedPdfIndex = index;
+      contextMenu.style.display = 'block';
+      contextMenu.style.left = `${e.pageX}px`;
+      contextMenu.style.top = `${e.pageY}px`;
+    }
+
+    document.getElementById('delete-pdf').addEventListener('click', () => {
+      if (selectedPdfIndex !== null) {
+        pdfs.splice(selectedPdfIndex, 1);
+        const cards = pdfGallery.querySelectorAll('.pdf-card');
+        if (cards[selectedPdfIndex]) {
+          cards[selectedPdfIndex].remove();
+        }
+        // Update indices of remaining cards
+        pdfGallery.querySelectorAll('.pdf-card').forEach((card, i) => {
+          card.dataset.index = i;
+        });
+        contextMenu.style.display = 'none';
+        selectedPdfIndex = null;
+      }
+    });
+
+    // Hide context menu on click elsewhere
+    document.addEventListener('click', () => {
+      contextMenu.style.display = 'none';
+      selectedPdfIndex = null;
+    });
+
+    // Open PDF
+    async function openPdf(url, name) {
+      try {
+        currentPdf = await pdfjsLib.getDocument(url).promise;
+        currentPage = 1;
+        scale = 2.0; // Reset to larger default scale
+
+        document.getElementById('pdf-viewer-modal').style.display = 'flex';
+
+        renderPage(currentPage);
+      } catch (error) {
+        console.error('Error opening PDF:', error);
+        alert('Failed to open PDF. Ensure the file is valid and served correctly.');
+      }
+    }
+
+    // Render Page
+    async function renderPage(pageNum) {
+      if (!currentPdf) return;
+      try {
+        const page = await currentPdf.getPage(pageNum);
+        const viewport = page.getViewport({ scale });
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({ canvasContext: context, viewport }).promise;
+      } catch (error) {
+        console.error('Error rendering page:', error);
+      }
+    }
+
+    // Arrow Key Navigation
+    document.addEventListener('keydown', (e) => {
+      if (!currentPdf) return;
+      if (e.key === '<' || e.key === 'ArrowLeft') {
+        if (currentPage > 1) {
+          currentPage--;
+          renderPage(currentPage);
+        }
+      } else if (e.key === '>' || e.key === 'ArrowRight') {
+        if (currentPage < currentPdf.numPages) {
+          currentPage++;
+          renderPage(currentPage);
+        }
+      }
+    });
+
+    // Scroll Wheel Zoom
+    document.getElementById('pdf-canvas-container').addEventListener('wheel', (e) => {
+      if (!currentPdf) return;
+      e.preventDefault();
+      const zoomStep = 0.1;
+      if (e.deltaY < 0) {
+        // Scroll up: Zoom in
+        scale = Math.min(scale + zoomStep, 4.0); // Max zoom
+      } else {
+        // Scroll down: Zoom out
+        scale = Math.max(scale - zoomStep, 0.4); // Min zoom
+      }
+      renderPage(currentPage);
+    });
+
+    document.getElementById('close-viewer').addEventListener('click', () => {
+      document.getElementById('pdf-viewer-modal').style.display = 'none';
+      currentPdf = null;
+      canvas.width = 0;
+      canvas.height = 0;
+    });
+  </script>
+</body>
+</html>
